@@ -76,7 +76,7 @@ const App: React.FC = () => {
         setState(prev => ({ ...prev, isEvaluating: false, isSuccess: false, feedback: result.feedback }));
       }
     } catch (e) {
-      setState(prev => ({ ...prev, isEvaluating: false, feedback: "ERRORE DI TRASMISSIONE." }));
+      setState(prev => ({ ...prev, isEvaluating: false, feedback: "ERRORE CRITICO DI COMUNICAZIONE." }));
     }
   };
 
@@ -341,13 +341,13 @@ const App: React.FC = () => {
 
       <main className="flex-1 flex gap-10 min-h-0 overflow-hidden">
         <aside className="w-[450px] flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-6">
-           {/* OBIETTIVO MISSIONE - TESTO PIU PICCOLO E CHIARO PER EVITARE TAGLI */}
-           <div className="panel-metal p-5 md:p-7 border-slate-700 bg-slate-900/95 shadow-2xl relative overflow-hidden shrink-0">
+           {/* OBIETTIVO MISSIONE - STILE PULITO E CARATTERE PIÙ PICCOLO PER CHIAREZZA */}
+           <div className="panel-metal p-6 border-slate-700 bg-slate-900/95 shadow-2xl relative overflow-hidden shrink-0">
               <div className="absolute top-0 left-0 w-full h-[2px] bg-orange-500/80 animate-pulse shadow-[0_0_10px_orange]"></div>
-              <h3 className="font-game text-orange-400 text-[10px] mb-3 uppercase tracking-[0.3em] font-black border-b border-orange-500/10 pb-2">MISSION_OBJECTIVE</h3>
+              <h3 className="font-game text-orange-400 text-[9px] mb-3 uppercase tracking-[0.4em] font-black border-b border-orange-500/10 pb-2">MISSION_OBJECTIVE</h3>
               <div className="max-h-[140px] overflow-y-auto custom-scrollbar">
-                <p className="text-slate-100 text-base md:text-lg font-bold leading-relaxed tracking-tight">
-                  "{currentLevel?.prompt}"
+                <p className="text-blue-100 text-sm md:text-base font-bold leading-relaxed tracking-wide">
+                  {currentLevel?.prompt}
                 </p>
               </div>
               <div className="bolt bolt-tr !w-2 !h-2"></div><div className="bolt bolt-bl !w-2 !h-2"></div>
@@ -386,7 +386,7 @@ const App: React.FC = () => {
                      <p className={`text-3xl font-game mb-4 italic tracking-tighter ${state.isSuccess ? 'text-green-400 drop-shadow-[0_0_15px_rgba(34,197,94,0.5)]' : 'text-red-400 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]'}`}>
                         {state.isSuccess ? '>>> ACCESSO_ESEGUITO' : '>>> VIOLAZIONE_FALLITA'}
                      </p>
-                     <p className="text-lg opacity-95 leading-relaxed italic bg-white/5 p-6 rounded-2xl border border-white/5 text-slate-200">{state.feedback}</p>
+                     <p className="text-lg opacity-95 leading-relaxed bg-white/5 p-6 rounded-2xl border border-white/5 text-slate-200">{state.feedback}</p>
                   </div>
                 ) : <div className="flex items-center justify-center h-full opacity-5 font-game text-6xl uppercase tracking-[1em] font-black italic">SLEEPING...</div>}
              </div>

@@ -1,11 +1,10 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// L'API Key viene iniettata automaticamente tramite Vite define nel browser
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
-
 /**
  * Valuta il codice SQL/PLSQL dello studente utilizzando Gemini 3 Pro.
+ * L'istanza GoogleGenAI viene creata all'interno della funzione per garantire
+ * di leggere sempre il valore aggiornato di process.env.API_KEY.
  */
 export async function evaluateSqlCode(
   levelPrompt: string,
@@ -14,15 +13,18 @@ export async function evaluateSqlCode(
   schema: string
 ): Promise<{ success: boolean; feedback: string }> {
   
-  if (!process.env.API_KEY) {
-    console.error("ERRORE: API_KEY non configurata nelle variabili d'ambiente.");
+  const apiKey = process.env.API_KEY;
+
+  if (!apiKey || apiKey === "undefined" || apiKey === "") {
+    console.error("ERRORE: API_KEY non configurata.");
     return { 
       success: false, 
-      feedback: "CONFIGURAZIONE MANCANTE: Assicurati di aver impostato la variabile API_KEY nel pannello di controllo di Vercel e ri-eseguito il deploy." 
+      feedback: "ERRORE DI CONFIGURAZIONE: La chiave API non è presente. Se sei su Vercel, aggiungi API_KEY nelle Environment Variables e riesegui il Deploy." 
     };
   }
 
   try {
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
       contents: `
@@ -67,9 +69,13 @@ export async function evaluateSqlCode(
   } catch (error: any) {
     console.error("Gemini API Error Detail:", error);
     
-    let userMsg = "Errore di connessione col server di valutazione. Riprova.";
-    if (error?.message?.includes("API key")) {
-      userMsg = "CHIAVE API NON VALIDA: Controlla la tua chiave Gemini su Vercel.";
+    let userMsg = "Errore di connessione col server di valutazione. Verifica la tua connessione o la validità della API KEY.";
+    
+    // Gestione specifica degli errori comuni
+    if (error?.message?.toLowerCase().includes("api key")) {
+      userMsg = "CHIAVE API NON VALIDA: Controlla di aver inserito correttamente la chiave Gemini nelle impostazioni di Vercel.";
+    } else if (error?.message?.includes("403") || error?.message?.includes("permission")) {
+      userMsg = "ERRORE 403: Accesso negato. La tua API KEY potrebbe non avere i permessi necessari o essere scaduta.";
     }
     
     return { success: false, feedback: userMsg };
@@ -85,9 +91,11 @@ export async function getHint(
   schema: string,
   currentCode: string
 ): Promise<string> {
-  if (!process.env.API_KEY) return "Configura l'API_KEY su Vercel per attivare i suggerimenti.";
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) return "Configura l'API_KEY su Vercel per attivare i suggerimenti.";
   
   try {
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
       contents: `
