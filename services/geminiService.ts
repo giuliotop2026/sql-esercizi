@@ -1,7 +1,10 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Protezione contro ReferenceError: process is not defined
+const API_KEY = typeof process !== 'undefined' ? process.env.API_KEY : '';
+
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 export async function evaluateSqlCode(
   levelPrompt: string,
