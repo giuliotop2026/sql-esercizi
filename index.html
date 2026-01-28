@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSQL Academy - Quest RPG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00d2ff;
+            --neon-purple: #9d50bb;
+            --terminal-bg: #0a0f1d;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #020617;
+            font-family: 'Inter', sans-serif;
+            color: #f1f5f9;
+            -webkit-font-smoothing: antialiased;
+        }
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+        
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .animate-shimmer {
+          animation: shimmer 2.5s infinite linear;
+        }
+
+        @keyframes scanline {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
+        }
+        .scanline {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to bottom, transparent, rgba(0, 210, 255, 0.05), transparent);
+          animation: scanline 8s linear infinite;
+          pointer-events: none;
+          z-index: 100;
+        }
+
+        .perspective-grid {
+          perspective: 1200px;
+          perspective-origin: center;
+        }
+
+        .isometric-tile {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .isometric-tile:hover {
+          transform: translateY(-5px);
+          filter: brightness(1.2);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0,0,0,0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(79, 70, 229, 0.3);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(79, 70, 229, 0.5);
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root" style="height: 100%;"></div>
+</body>
+</html>
