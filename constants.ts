@@ -1,170 +1,244 @@
 
-import { Level, Difficulty, TaskType } from './types';
+import { Level, Difficulty, TaskType, TableSchema, DatabaseID } from './types';
 
-const SCHEMA_OSPEDALE = [
-  { name: "Persona", columns: [{ name: "CF", type: "CHAR(16)", isPrimary: true }, { name: "Nome", type: "VARCHAR" }, { name: "Cognome", type: "VARCHAR" }, { name: "Data_nascita", type: "DATE" }, { name: "sesso", type: "CHAR(1)" }] },
-  { name: "Medico", columns: [{ name: "CF", type: "CHAR(16)", isPrimary: true, isForeign: true }, { name: "Specializzazione", type: "VARCHAR" }, { name: "Anni_esp", type: "NUMBER" }] },
-  { name: "Infermiere", columns: [{ name: "CF", type: "CHAR(16)", isPrimary: true, isForeign: true }, { name: "Data_ass", type: "DATE" }, { name: "qualifica", type: "VARCHAR" }] },
-  { name: "Intervento", columns: [{ name: "ID", type: "NUMBER", isPrimary: true }, { name: "tipo", type: "VARCHAR" }, { name: "Data_e_ora", type: "DATE" }, { name: "durata", type: "NUMBER" }, { name: "CF_paz", type: "CHAR" }] }
+export const SCHEMA_ASTE: TableSchema[] = [
+  { name: "Oggetto", columns: [
+    { name: "codice_oggetto", type: "CHAR", isPrimary: true },
+    { name: "Nome", type: "VARCHAR" },
+    { name: "provenienza", type: "VARCHAR" },
+    { name: "Ingombro", type: "NUMBER" }
+  ]},
+  { name: "Opera_d_arte", columns: [
+    { name: "autore", type: "VARCHAR" },
+    { name: "tipo", type: "VARCHAR" },
+    { name: "Codice_oggetto", type: "CHAR", isForeign: true }
+  ]},
+  { name: "Antiquariato", columns: [
+    { name: "materiale", type: "VARCHAR" },
+    { name: "periodo_rif", type: "VARCHAR" },
+    { name: "codice_oggetto", type: "CHAR", isForeign: true }
+  ]},
+  { name: "Asta", columns: [
+    { name: "ID_asta", type: "CHAR", isPrimary: true },
+    { name: "Rilancio_min", type: "NUMBER" },
+    { name: "prezzo_base", type: "NUMBER" },
+    { name: "Data_inizio", type: "DATE" },
+    { name: "Data_fine", type: "DATE" },
+    { name: "Codice_oggetto", type: "CHAR", isForeign: true }
+  ]},
+  { name: "Utente", columns: [
+    { name: "Login", type: "VARCHAR", isPrimary: true },
+    { name: "password", type: "VARCHAR" },
+    { name: "nome", type: "VARCHAR" },
+    { name: "cognome", type: "VARCHAR" }
+  ]},
+  { name: "Vendita", columns: [
+    { name: "Fattura", type: "CHAR", isPrimary: true },
+    { name: "Data_ricez_pag", type: "DATE" },
+    { name: "tipo_pagamento", type: "VARCHAR" },
+    { name: "prezzo_finale", type: "NUMBER" },
+    { name: "CF", type: "CHAR" },
+    { name: "via", type: "VARCHAR" },
+    { name: "civico", type: "NUMBER" },
+    { name: "CAP", type: "CHAR" },
+    { name: "citta", type: "VARCHAR" },
+    { name: "ID_asta", type: "CHAR", isForeign: true }
+  ]},
+  { name: "rilanciata", columns: [
+    { name: "ID_asta", type: "CHAR", isPrimary: true, isForeign: true },
+    { name: "login", type: "VARCHAR", isPrimary: true, isForeign: true },
+    { name: "prezzo_rilancio", type: "NUMBER", isPrimary: true }
+  ]}
 ];
 
-const SCHEMA_ASTE = [
-  { name: "Oggetto", columns: [{ name: "codice_oggetto", type: "CHAR", isPrimary: true }, { name: "Nome", type: "VARCHAR" }, { name: "provenienza", type: "VARCHAR" }, { name: "Ingombro", type: "NUMBER" }] },
-  { name: "Asta", columns: [{ name: "ID_asta", type: "CHAR", isPrimary: true }, { name: "prezzo_base", type: "NUMBER" }, { name: "Data_inizio", type: "DATE" }, { name: "Data_fine", type: "DATE" }, { name: "Codice_oggetto", type: "CHAR" }] },
-  { name: "rilanciata", columns: [{ name: "ID_asta", type: "CHAR", isPrimary: true }, { name: "login", type: "VARCHAR", isPrimary: true }, { name: "prezzo_rilancio", type: "NUMBER", isPrimary: true }] },
-  { name: "Utente", columns: [{ name: "Login", type: "VARCHAR", isPrimary: true }, { name: "nome", type: "VARCHAR" }, { name: "cognome", type: "VARCHAR" }] }
+export const SCHEMA_OSPEDALE: TableSchema[] = [
+  { name: "Persona", columns: [
+    { name: "CF", type: "CHAR", isPrimary: true },
+    { name: "Nome", type: "VARCHAR" },
+    { name: "Cognome", type: "VARCHAR" },
+    { name: "Data_nascita", type: "DATE" },
+    { name: "sesso", type: "CHAR" }
+  ]},
+  { name: "Medico", columns: [
+    { name: "Specializzazione", type: "VARCHAR" },
+    { name: "Anni_esp", type: "NUMBER" },
+    { name: "CF", type: "CHAR", isPrimary: true, isForeign: true }
+  ]},
+  { name: "Infermiere", columns: [
+    { name: "Data_ass", type: "DATE" },
+    { name: "qualifica", type: "VARCHAR" },
+    { name: "CF", type: "CHAR", isPrimary: true, isForeign: true }
+  ]},
+  { name: "Paziente", columns: [
+    { name: "CF", type: "CHAR", isPrimary: true, isForeign: true },
+    { name: "data_ric", type: "DATE", isPrimary: true },
+    { name: "data_dim", type: "DATE" }
+  ]},
+  { name: "Effettua", columns: [
+    { name: "CF_med", type: "CHAR", isPrimary: true, isForeign: true },
+    { name: "ID_int", type: "NUMBER", isPrimary: true, isForeign: true }
+  ]},
+  { name: "Assiste", columns: [
+    { name: "CF_inf", type: "CHAR", isPrimary: true, isForeign: true },
+    { name: "ID_int", type: "NUMBER", isPrimary: true, isForeign: true }
+  ]},
+  { name: "Intervento", columns: [
+    { name: "ID", type: "NUMBER", isPrimary: true },
+    { name: "tipo", type: "VARCHAR" },
+    { name: "Data_e_ora", type: "DATE" },
+    { name: "durata", type: "NUMBER" },
+    { name: "sala_op", type: "VARCHAR" },
+    { name: "CF_paz", type: "CHAR", isForeign: true },
+    { name: "Data_Ric", type: "DATE", isForeign: true }
+  ]}
 ];
 
-export const LEVELS: Level[] = [
-  // ZONE 1: FONDAMENTI & FILTRI (6 Esercizi)
-  {
-    id: 1, zone: 1, x: 2, y: 1, title: "L'Anagrafe", description: "Esplora i cittadini.", difficulty: Difficulty.BEGINNER, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Seleziona tutti i campi della tabella Persona.", 
-    tutorial: "La query base è 'SELECT * FROM Tabella;'. L'asterisco (*) indica tutte le colonne.", 
-    expectedGoal: "SELECT * FROM Persona",
-  },
-  {
-    id: 2, zone: 1, x: 3, y: 1, title: "Filtro Sesso", description: "Divisione dati.", difficulty: Difficulty.BEGINNER, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Trova Nome e Cognome delle persone di sesso 'F'.", 
-    tutorial: "Usa 'WHERE colonna = valore'. Ricorda che i valori testuali vanno tra apici singoli (').", 
-    expectedGoal: "SELECT Nome, Cognome FROM Persona WHERE sesso = 'F'",
-  },
-  {
-    id: 3, zone: 1, x: 4, y: 1, title: "Nati nel Futuro", description: "Lavoro con le date.", difficulty: Difficulty.EASY, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Seleziona le persone nate dopo il 1° Gennaio 2000.", 
-    tutorial: "In SQL le date si confrontano come stringhe 'YYYY-MM-DD' o usando operatori come >.", 
-    expectedGoal: "SELECT * FROM Persona WHERE Data_nascita > '2000-01-01'",
-  },
-  {
-    id: 4, zone: 1, x: 5, y: 1, title: "Ricerca Parziale", description: "Pattern matching.", difficulty: Difficulty.EASY, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Trova le persone il cui cognome inizia con la lettera 'B'.", 
-    tutorial: "L'operatore LIKE cerca pattern. '%' è il jolly: 'B%' significa 'inizia con B'.", 
-    expectedGoal: "SELECT * FROM Persona WHERE Cognome LIKE 'B%'",
-  },
-  {
-    id: 5, zone: 1, x: 6, y: 1, title: "Cardiologi Esperti", description: "Filtri multipli.", difficulty: Difficulty.EASY, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Trova i medici con specializzazione 'Cardiologia' e almeno 10 anni di esperienza.", 
-    tutorial: "Unisci condizioni con AND. Ricorda: i numeri non hanno bisogno di apici.", 
-    expectedGoal: "SELECT * FROM Medico WHERE Specializzazione = 'Cardiologia' AND Anni_esp >= 10",
-  },
-  {
-    id: 6, zone: 1, x: 7, y: 1, title: "Ordine Alfabetico", description: "Ordinamento.", difficulty: Difficulty.EASY, type: TaskType.QUERY, schema: SCHEMA_ASTE,
-    prompt: "Mostra gli oggetti ordinati per nome in ordine decrescente.", 
-    tutorial: "Usa 'ORDER BY colonna DESC' per l'ordine decrescente (Z-A).", 
-    expectedGoal: "SELECT * FROM Oggetto ORDER BY Nome DESC",
-  },
+export const getLevelsForSector = (sector: number, db: DatabaseID): Level[] => {
+  const isAste = db === 'aste';
+  const points = [{x: 10, y: 30}, {x: 25, y: 50}, {x: 45, y: 20}, {x: 60, y: 40}, {x: 75, y: 65}, {x: 90, y: 35}, {x: 85, y: 80}];
+  const levels: Level[] = [];
 
-  // ZONE 2: JOIN & RELAZIONI (6 Esercizi)
-  {
-    id: 7, zone: 2, x: 2, y: 3, title: "Specialisti Uniti", description: "ISA Join.", difficulty: Difficulty.MEDIUM, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Mostra Nome, Cognome e Specializzazione di ogni medico.", 
-    tutorial: "La JOIN unisce tabelle su una chiave comune. 'JOIN Medico ON Persona.CF = Medico.CF'.", 
-    expectedGoal: "SELECT P.Nome, P.Cognome, M.Specializzazione FROM Persona P JOIN Medico M ON P.CF = M.CF",
-  },
-  {
-    id: 8, zone: 2, x: 3, y: 3, title: "Aste e Provenienza", description: "Relazioni 1:N.", difficulty: Difficulty.MEDIUM, type: TaskType.QUERY, schema: SCHEMA_ASTE,
-    prompt: "Per ogni asta, mostra l'ID e la provenienza dell'oggetto venduto.", 
-    tutorial: "Incrocia Asta e Oggetto usando il codice_oggetto.", 
-    expectedGoal: "SELECT A.ID_asta, O.provenienza FROM Asta A JOIN Oggetto O ON A.Codice_oggetto = O.codice_oggetto",
-  },
-  {
-    id: 9, zone: 2, x: 4, y: 3, title: "Rilanci Utenti", description: "Chi punta?", difficulty: Difficulty.MEDIUM, type: TaskType.QUERY, schema: SCHEMA_ASTE,
-    prompt: "Mostra il nome dell'utente e il prezzo del rilancio effettuato.", 
-    tutorial: "Collega Utente a Rilanciata tramite il campo Login.", 
-    expectedGoal: "SELECT U.nome, R.prezzo_rilancio FROM Utente U JOIN rilanciata R ON U.Login = R.login",
-  },
-  {
-    id: 10, zone: 2, x: 5, y: 3, title: "Triplo Incrocio", description: "Join multiple.", difficulty: Difficulty.HARD, type: TaskType.QUERY, schema: SCHEMA_ASTE,
-    prompt: "Trova il nome dell'oggetto e il nome dell'utente che ha fatto un rilancio su quell'oggetto.", 
-    tutorial: "Collega Oggetto -> Asta -> Rilanciata -> Utente. Una catena di JOIN.", 
-    expectedGoal: "SELECT O.Nome, U.nome FROM Oggetto O JOIN Asta A ON O.codice_oggetto = A.Codice_oggetto JOIN rilanciata R ON A.ID_asta = R.ID_asta JOIN Utente U ON R.login = U.Login",
-  },
-  {
-    id: 11, zone: 2, x: 6, y: 3, title: "Interventi Pazienti", description: "Chi è operato?", difficulty: Difficulty.HARD, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Per ogni intervento, mostra il tipo e il nome del paziente operato.", 
-    tutorial: "Unisci Intervento a Persona usando Intervento.CF_paz = Persona.CF.", 
-    expectedGoal: "SELECT I.tipo, P.Nome FROM Intervento I JOIN Persona P ON I.CF_paz = P.CF",
-  },
-  {
-    id: 12, zone: 2, x: 7, y: 3, title: "Colleghi Medici", description: "Self Join.", difficulty: Difficulty.EXAM, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Trova coppie di medici con la stessa specializzazione (visualizza solo i CF).", 
-    tutorial: "Una Self Join usa la stessa tabella due volte: 'Medico M1 JOIN Medico M2'. M1.CF < M2.CF evita duplicati.", 
-    expectedGoal: "SELECT M1.CF, M2.CF FROM Medico M1 JOIN Medico M2 ON M1.Specializzazione = M2.Specializzazione WHERE M1.CF < M2.CF",
-  },
+  if (sector === 1) { // MONDO 1: BASI
+    const table = isAste ? "Oggetto" : "Persona";
+    const col1 = isAste ? "Nome" : "Cognome";
+    const col2 = isAste ? "provenienza" : "sesso";
 
-  // ZONE 3: AGGREGATI & STATISTICHE (6 Esercizi)
-  {
-    id: 13, zone: 3, x: 2, y: 5, title: "Staff Medico", description: "Conteggio.", difficulty: Difficulty.MEDIUM, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Conta quanti medici ci sono per ogni specializzazione.", 
-    tutorial: "Usa COUNT(*) e GROUP BY colonna.", 
-    expectedGoal: "SELECT Specializzazione, COUNT(*) FROM Medico GROUP BY Specializzazione",
-  },
-  {
-    id: 14, zone: 3, x: 3, y: 5, title: "Business Aste", description: "Somma.", difficulty: Difficulty.MEDIUM, type: TaskType.QUERY, schema: SCHEMA_ASTE,
-    prompt: "Per ogni asta, calcola il totale incassato dai rilanci.", 
-    tutorial: "Usa SUM(prezzo_rilancio). GROUP BY raggruppa per ID_asta.", 
-    expectedGoal: "SELECT ID_asta, SUM(prezzo_rilancio) FROM rilanciata GROUP BY ID_asta",
-  },
-  {
-    id: 15, zone: 3, x: 4, y: 5, title: "Durata Media", description: "Medie.", difficulty: Difficulty.MEDIUM, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Calcola la durata media degli interventi raggruppati per tipo.", 
-    tutorial: "Usa AVG(durata).", 
-    expectedGoal: "SELECT tipo, AVG(durata) FROM Intervento GROUP BY tipo",
-  },
-  {
-    id: 16, zone: 3, x: 5, y: 5, title: "Record Rilanci", description: "Massimi e Minimi.", difficulty: Difficulty.HARD, type: TaskType.QUERY, schema: SCHEMA_ASTE,
-    prompt: "Trova il prezzo massimo e minimo dei rilanci per l'asta 'A101'.", 
-    tutorial: "Usa MAX() e MIN() insieme nella SELECT.", 
-    expectedGoal: "SELECT MAX(prezzo_rilancio), MIN(prezzo_rilancio) FROM rilanciata WHERE ID_asta = 'A101'",
-  },
-  {
-    id: 17, zone: 3, x: 6, y: 5, title: "Aste Contese", description: "Filtro Having.", difficulty: Difficulty.HARD, type: TaskType.QUERY, schema: SCHEMA_ASTE,
-    prompt: "Mostra gli ID delle aste che hanno ricevuto più di 5 rilanci.", 
-    tutorial: "WHERE filtra righe, HAVING filtra gruppi. Usa HAVING COUNT(*) > 5.", 
-    expectedGoal: "SELECT ID_asta FROM rilanciata GROUP BY ID_asta HAVING COUNT(*) > 5",
-  },
-  {
-    id: 18, zone: 3, x: 7, y: 5, title: "Statistiche Infortuni", description: "Aggregati complessi.", difficulty: Difficulty.EXAM, type: TaskType.QUERY, schema: SCHEMA_OSPEDALE,
-    prompt: "Per ogni tipo di intervento, trova la durata totale e il numero di interventi fatti.", 
-    tutorial: "Puoi usare più funzioni aggregate nella stessa query.", 
-    expectedGoal: "SELECT tipo, SUM(durata), COUNT(*) FROM Intervento GROUP BY tipo",
-  },
+    const prompts = [
+      `Estrai tutti i dati dalla tabella ${table}.`,
+      `Mostra solo le colonne ${col1} e ${col2} della tabella ${table}.`,
+      `Trova gli elementi della tabella ${table} dove ${col2} è ${isAste ? "'Marte'" : "'M'"}.`,
+      `Seleziona ${col1} per gli elementi dove ${isAste ? 'Ingombro > 500' : 'Nome inizia per A'}.`,
+      `Mostra tutti i valori diversi presenti nella colonna ${col2}.`,
+      `Ordina la tabella ${table} per ${col1} in ordine alfabetico.`,
+      `Trova nome e ${col2} degli elementi con ${isAste ? 'Ingombro < 100' : 'Sesso F'}, ordinati per ${col1}.`
+    ];
 
-  // ZONE 4: TRIGGERS (6 Esercizi)
-  {
-    id: 19, zone: 4, x: 2, y: 7, title: "Validità Rilancio", description: "Controllo inserimento.", difficulty: Difficulty.HARD, type: TaskType.TRIGGER, schema: SCHEMA_ASTE,
-    prompt: "Impedisci rilanci minori o uguali a zero.", 
-    tutorial: "Un trigger BEFORE INSERT verifica i dati. Usa RAISE_APPLICATION_ERROR se il valore non va bene.", 
-    expectedGoal: "CREATE OR REPLACE TRIGGER CheckPositivo BEFORE INSERT ON rilanciata FOR EACH ROW BEGIN IF :NEW.prezzo_rilancio <= 0 THEN RAISE_APPLICATION_ERROR(-20001, 'Errore'); END IF; END;",
-  },
-  {
-    id: 20, zone: 4, x: 3, y: 7, title: "Asta Coerente", description: "Controllo date.", difficulty: Difficulty.HARD, type: TaskType.TRIGGER, schema: SCHEMA_ASTE,
-    prompt: "Un'asta non può finire prima di iniziare.", 
-    tutorial: "Confronta :NEW.Data_inizio e :NEW.Data_fine nel trigger.", 
-    expectedGoal: "CREATE OR REPLACE TRIGGER CheckDate BEFORE INSERT ON Asta FOR EACH ROW BEGIN IF :NEW.Data_fine < :NEW.Data_inizio THEN RAISE_APPLICATION_ERROR(-20002, 'Data fine non valida'); END IF; END;",
-  },
-  {
-    id: 21, zone: 4, x: 4, y: 7, title: "Auto-Cura", description: "Business logic.", difficulty: Difficulty.HARD, type: TaskType.TRIGGER, schema: SCHEMA_OSPEDALE,
-    prompt: "Impedisci l'inserimento di un intervento se il medico e il paziente sono la stessa persona.", 
-    tutorial: "Verifica se il CF del medico è uguale al CF del paziente nell'intervento.", 
-    expectedGoal: "CREATE OR REPLACE TRIGGER NoAutoCura BEFORE INSERT ON Intervento FOR EACH ROW BEGIN ... END;",
-  },
-  {
-    id: 22, zone: 4, x: 5, y: 7, title: "Limite Esperienza", description: "Aggiornamento dati.", difficulty: Difficulty.EXAM, type: TaskType.TRIGGER, schema: SCHEMA_OSPEDALE,
-    prompt: "Impedisci di aggiornare gli anni di esperienza di un medico diminuendoli.", 
-    tutorial: "Usa BEFORE UPDATE. Confronta :NEW.Anni_esp con :OLD.Anni_esp.", 
-    expectedGoal: "CREATE OR REPLACE TRIGGER NoRegression BEFORE UPDATE ON Medico FOR EACH ROW BEGIN IF :NEW.Anni_esp < :OLD.Anni_esp THEN RAISE_APPLICATION_ERROR(-20005, 'Esperienza decrescente'); END IF; END;",
-  },
-  {
-    id: 23, zone: 4, x: 6, y: 7, title: "Ingombro Massimo", description: "Somma dinamica.", difficulty: Difficulty.EXAM, type: TaskType.TRIGGER, schema: SCHEMA_ASTE,
-    prompt: "Impedisci di inserire un oggetto se l'ingombro supera 1000.", 
-    tutorial: "Un trigger può bloccare inserimenti basati su valori di altre colonne.", 
-    expectedGoal: "CREATE OR REPLACE TRIGGER LimitIngombro BEFORE INSERT ON Oggetto FOR EACH ROW BEGIN IF :NEW.Ingombro > 1000 THEN RAISE_APPLICATION_ERROR(-20006, 'Troppo grande'); END IF; END;",
-  },
-  {
-    id: 24, zone: 4, x: 7, y: 7, title: "Log Protezione", description: "Blocco totale.", difficulty: Difficulty.EXAM, type: TaskType.TRIGGER, schema: SCHEMA_ASTE,
-    prompt: "Crea un trigger che impedisca la cancellazione di utenti dalla tabella Utente.", 
-    tutorial: "Usa BEFORE DELETE e lancia sempre un errore.", 
-    expectedGoal: "CREATE OR REPLACE TRIGGER ProtectUsers BEFORE DELETE ON Utente FOR EACH ROW BEGIN RAISE_APPLICATION_ERROR(-20007, 'Cancellazione proibita'); END;",
+    for (let i = 0; i < 7; i++) {
+      levels.push({
+        id: i + 1,
+        sector: 1,
+        title: `BASI - Step ${i + 1}`,
+        description: "Fondamenta del linguaggio SQL.",
+        difficulty: Difficulty.BEGINNER,
+        type: TaskType.QUERY,
+        prompt: prompts[i],
+        theory: "La clausola SELECT permette di estrarre dati, WHERE di filtrarli e ORDER BY di organizzarli.",
+        x: points[i].x, y: points[i].y,
+        steps: [
+          { label: "OBIETTIVO", type: 'text', content: prompts[i] },
+          { label: "TABELLE", type: 'tables', content: `Lavoreremo sulla tabella ${table}.`, highlightedTables: [table] },
+          { label: "LOGICA", type: 'logic', content: `Dobbiamo dire al database: 'Prendi questi campi (${col1}, ${col2}) da questa tabella (${table})'.` },
+          { label: "OPERATORE", type: 'logic', content: i > 1 ? "Useremo WHERE per creare un filtro." : "Useremo SELECT semplice." },
+          { label: "SOLUZIONE", type: 'code', content: "Ecco come scrivere la query completa:", code: i === 0 ? `SELECT * FROM ${table};` : `SELECT ${col1}, ${col2} FROM ${table} ${i > 2 ? 'WHERE ...' : ''};` }
+        ]
+      });
+    }
+  } else if (sector === 2) { // MONDO 2: JOIN
+    const t1 = isAste ? "Oggetto" : "Persona";
+    const t2 = isAste ? "Opera_d_arte" : "Medico";
+    const pk = isAste ? "codice_oggetto" : "CF";
+    const fk = isAste ? "Codice_oggetto" : "CF";
+
+    const prompts = [
+      `Collega ${t1} con ${t2} per vedere i nomi e i loro dettagli collegati.`,
+      `Estrai il Nome dell'oggetto e l'autore (dalla tabella ${t2}) solo per gli oggetti di tipo 'Pittura'.`,
+      `Trova le persone che sono anche medici, mostrando Cognome e Specializzazione.`,
+      `Mostra il Nome dell'oggetto e l'ID dell'Asta associata (tabella Asta).`,
+      `Unisci ${t1}, ${t2} e Asta per avere un report completo di oggetti rari e prezzi base.`,
+      `Trova i medici che effettuano interventi unendo Medico e Effettua.`,
+      `Sfida Finale Join: Collega 3 tabelle (Persona, Medico, Effettua) per vedere chi opera.`
+    ];
+
+    for (let i = 0; i < 7; i++) {
+      levels.push({
+        id: i + 8,
+        sector: 2,
+        title: `JOIN - Step ${i + 1}`,
+        description: "Relazioni tra entità.",
+        difficulty: Difficulty.MEDIUM,
+        type: TaskType.QUERY,
+        prompt: prompts[i],
+        theory: "Il JOIN unisce righe di tabelle diverse basandosi su colonne comuni (Chiavi).",
+        x: points[i].x, y: points[i].y,
+        steps: [
+          { label: "OBIETTIVO", type: 'text', content: prompts[i] },
+          { label: "TABELLE", type: 'tables', content: `Coinvolgeremo ${t1} e ${t2}.`, highlightedTables: [t1, t2] },
+          { label: "RELAZIONE", type: 'logic', content: `Il collegamento avviene tra ${t1}.${pk} e ${t2}.${fk}.` },
+          { label: "PROCEDIMENTO", type: 'logic', content: "Usiamo la clausola ON per definire il 'ponte' tra le tabelle." },
+          { label: "SOLUZIONE", type: 'code', content: "La query di giunzione:", code: `SELECT ${t1}.Nome, ${t2}.${isAste ? 'autore' : 'Specializzazione'} \nFROM ${t1} JOIN ${t2} ON ${t1}.${pk} = ${t2}.${fk};` }
+        ]
+      });
+    }
+  } else if (sector === 3) { // MONDO 3: ANALISI
+    const table = isAste ? "rilanciata" : "Medico";
+    const col = isAste ? "prezzo_rilancio" : "Anni_esp";
+    const group = isAste ? "ID_asta" : "Specializzazione";
+
+    const prompts = [
+      `Conta quanti elementi ci sono nella tabella ${isAste ? 'Oggetto' : 'Medico'}.`,
+      `Calcola la somma totale di tutti i ${isAste ? 'prezzi di rilancio' : 'anni di esperienza'}.`,
+      `Trova il valore massimo di ${col} mai registrato.`,
+      `Calcola la media di ${col} per ogni ${group}.`,
+      `Conta quanti rilanci ha ricevuto ogni singola Asta.`,
+      `Mostra solo le specializzazioni (${group}) che hanno una media di ${col} superiore a 10.`,
+      `Report Analitico: Numero di elementi e media valori raggruppati.`
+    ];
+
+    for (let i = 0; i < 7; i++) {
+      levels.push({
+        id: i + 15,
+        sector: 3,
+        title: `ANALISI - Step ${i + 1}`,
+        description: "Aggregazione e statistiche.",
+        difficulty: Difficulty.HARD,
+        type: TaskType.QUERY,
+        prompt: prompts[i],
+        theory: "GROUP BY raggruppa righe simili, le funzioni aggregate (SUM, AVG, COUNT) le analizzano.",
+        x: points[i].x, y: points[i].y,
+        steps: [
+          { label: "OBIETTIVO", type: 'text', content: prompts[i] },
+          { label: "TABELLE", type: 'tables', content: `Useremo la tabella ${table}.`, highlightedTables: [table] },
+          { label: "AGGREGAZIONE", type: 'logic', content: `Dobbiamo raggruppare i dati per ${group} usando GROUP BY.` },
+          { label: "FILTRO GRUPPI", type: 'logic', content: i === 5 ? "Useremo HAVING per filtrare i risultati DOPO il raggruppamento." : "Useremo una funzione di calcolo come AVG o SUM." },
+          { label: "SOLUZIONE", type: 'code', content: "Sintassi di analisi:", code: `SELECT ${group}, AVG(${col}) \nFROM ${table} \nGROUP BY ${group}${i === 5 ? ' HAVING AVG(...) > 10' : ''};` }
+        ]
+      });
+    }
+  } else { // MONDO 4: TRIGGER
+    const table = isAste ? "Asta" : "Intervento";
+    const field = isAste ? "prezzo_base" : "durata";
+
+    const prompts = [
+      `Crea un trigger che impedisca di inserire un ${field} negativo in ${table}.`,
+      `Crea un trigger che, dopo ogni inserimento, registri l'operazione.`,
+      `Trigger di Validazione: Impedisci prezzi di rilancio inferiori al rilancio minimo.`,
+      `Trigger di Correzione: Se la durata inserita è NULL, impostala automaticamente a 30.`,
+      `Trigger Multi-Evento: Gestisci logica diversa per INSERT e UPDATE su ${table}.`,
+      `Trigger di Sicurezza: Impedisci modifiche alla tabella ${table} fuori orario.`,
+      `Esame Finale Trigger: Crea un sistema di controllo integrità complesso.`
+    ];
+
+    for (let i = 0; i < 7; i++) {
+      levels.push({
+        id: i + 22,
+        sector: 4,
+        title: `TRIGGER - Step ${i + 1}`,
+        description: "Automazione e vincoli.",
+        difficulty: Difficulty.EXAM,
+        type: TaskType.TRIGGER,
+        prompt: prompts[i],
+        theory: "Un Trigger è un blocco PL/SQL che si attiva automaticamente al verificarsi di un evento (DML).",
+        x: points[i].x, y: points[i].y,
+        steps: [
+          { label: "OBIETTIVO", type: 'text', content: prompts[i] },
+          { label: "EVENTO", type: 'logic', content: `Il trigger deve scattare BEFORE INSERT sulla tabella ${table}.` },
+          { label: "DATO :NEW", type: 'logic', content: "Useremo la variabile :NEW per accedere ai dati che si stanno provando a inserire." },
+          { label: "BLOCCO", type: 'logic', content: "Se la condizione è vera, useremo RAISE_APPLICATION_ERROR per bloccare l'azione." },
+          { label: "SOLUZIONE", type: 'code', content: "Struttura PL/SQL:", code: `CREATE OR REPLACE TRIGGER trg_safety \nBEFORE INSERT ON ${table} FOR EACH ROW \nBEGIN \n  IF :NEW.${field} < 0 THEN \n    RAISE_APPLICATION_ERROR(-20001, 'Valore non valido'); \n  END IF; \nEND;` }
+        ]
+      });
+    }
   }
-];
+
+  return levels;
+};

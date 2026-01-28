@@ -24,28 +24,40 @@ export interface TableSchema {
   columns: TableColumn[];
 }
 
+export interface TutorialStep {
+  label: string;
+  content: string;
+  type: 'text' | 'tables' | 'logic' | 'code';
+  code?: string;
+  highlightedTables?: string[];
+}
+
 export interface Level {
   id: number;
-  zone: number;
+  sector: number; // 1: Basi, 2: Join, 3: Analisi, 4: Trigger
   title: string;
   description: string;
   difficulty: Difficulty;
   type: TaskType;
-  schema: TableSchema[];
   prompt: string;
-  tutorial: string;
-  expectedGoal: string;
-  x: number; // Position on world map
+  theory: string;
+  steps: TutorialStep[];
+  x: number;
   y: number;
 }
 
+export type SectorID = 'basi' | 'join' | 'analisi' | 'trigger';
+export type DatabaseID = 'aste' | 'ospedale';
+
 export interface GameState {
+  currentDatabase: DatabaseID | null;
+  currentSectorId: SectorID | null;
   currentLevelId: number | null;
-  completedLevels: number[];
+  completedLevels: Record<string, number[]>; // key: "db_sector"
   userCode: string;
   isEvaluating: boolean;
   feedback: string | null;
   isSuccess: boolean | null;
   charPos: { x: number, y: number };
-  viewMode: 'world' | 'terminal';
+  isTraveling: boolean;
 }
