@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { LEVELS } from './constants.ts';
-import { GameState, Level } from './types.ts';
-import SqlEditor from './components/SqlEditor.tsx';
-import SchemaViewer from './components/SchemaViewer.tsx';
-import { evaluateSqlCode, getHint } from './services/geminiService.ts';
+import { LEVELS } from './constants';
+import { GameState, Level } from './types';
+import SqlEditor from './components/SqlEditor';
+import SchemaViewer from './components/SchemaViewer';
+import { evaluateSqlCode, getHint } from './services/geminiService';
 
 const GRID_SIZE = 10;
 const TILE_SIZE = 75;
