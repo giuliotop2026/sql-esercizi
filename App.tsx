@@ -341,13 +341,15 @@ const App: React.FC = () => {
 
       <main className="flex-1 flex gap-10 min-h-0 overflow-hidden">
         <aside className="w-[450px] flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-6">
-           {/* OBIETTIVO MISSIONE - STILE MIGLIORATO E FONT PIU PICCOLO */}
-           <div className="panel-metal p-6 md:p-8 border-slate-700 bg-slate-900/90 shadow-2xl relative overflow-hidden shrink-0">
+           {/* OBIETTIVO MISSIONE - TESTO PIU PICCOLO E CHIARO PER EVITARE TAGLI */}
+           <div className="panel-metal p-5 md:p-7 border-slate-700 bg-slate-900/95 shadow-2xl relative overflow-hidden shrink-0">
               <div className="absolute top-0 left-0 w-full h-[2px] bg-orange-500/80 animate-pulse shadow-[0_0_10px_orange]"></div>
-              <h3 className="font-game text-orange-400 text-[11px] mb-4 uppercase italic tracking-[0.4em] font-black border-b border-orange-500/20 pb-2">MISSION_OBJECTIVE</h3>
-              <p className="text-white text-lg md:text-xl font-bold italic leading-relaxed drop-shadow-lg">
-                "{currentLevel?.prompt}"
-              </p>
+              <h3 className="font-game text-orange-400 text-[10px] mb-3 uppercase tracking-[0.3em] font-black border-b border-orange-500/10 pb-2">MISSION_OBJECTIVE</h3>
+              <div className="max-h-[140px] overflow-y-auto custom-scrollbar">
+                <p className="text-slate-100 text-base md:text-lg font-bold leading-relaxed tracking-tight">
+                  "{currentLevel?.prompt}"
+                </p>
+              </div>
               <div className="bolt bolt-tr !w-2 !h-2"></div><div className="bolt bolt-bl !w-2 !h-2"></div>
            </div>
            {/* SCHEMA DATABASE */}

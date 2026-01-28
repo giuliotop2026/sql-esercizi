@@ -1,11 +1,11 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Always use named parameter for apiKey and fetch it from process.env.API_KEY
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// L'API Key viene iniettata automaticamente tramite Vite define nel browser
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
 
 /**
- * Evaluates the student's SQL/PLSQL code using Gemini 3 Pro.
+ * Valuta il codice SQL/PLSQL dello studente utilizzando Gemini 3 Pro.
  */
 export async function evaluateSqlCode(
   levelPrompt: string,
@@ -13,8 +13,16 @@ export async function evaluateSqlCode(
   userCode: string,
   schema: string
 ): Promise<{ success: boolean; feedback: string }> {
+  
+  if (!process.env.API_KEY) {
+    console.error("ERRORE: API_KEY non configurata nelle variabili d'ambiente.");
+    return { 
+      success: false, 
+      feedback: "CONFIGURAZIONE MANCANTE: Assicurati di aver impostato la variabile API_KEY nel pannello di controllo di Vercel e ri-eseguito il deploy." 
+    };
+  }
+
   try {
-    // Complex coding tasks use gemini-3-pro-preview
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
       contents: `
@@ -54,17 +62,22 @@ export async function evaluateSqlCode(
       }
     });
 
-    // Access the text property directly on the response object.
     const text = response.text || "{}";
     return JSON.parse(text.trim());
-  } catch (error) {
-    console.error("Gemini Error:", error);
-    return { success: false, feedback: "Errore di connessione col server di valutazione. Riprova." };
+  } catch (error: any) {
+    console.error("Gemini API Error Detail:", error);
+    
+    let userMsg = "Errore di connessione col server di valutazione. Riprova.";
+    if (error?.message?.includes("API key")) {
+      userMsg = "CHIAVE API NON VALIDA: Controlla la tua chiave Gemini su Vercel.";
+    }
+    
+    return { success: false, feedback: userMsg };
   }
 }
 
 /**
- * Provides an educational hint for the current level's SQL challenge.
+ * Fornisce un suggerimento educativo per la sfida SQL corrente.
  */
 export async function getHint(
   levelPrompt: string,
@@ -72,8 +85,9 @@ export async function getHint(
   schema: string,
   currentCode: string
 ): Promise<string> {
+  if (!process.env.API_KEY) return "Configura l'API_KEY su Vercel per attivare i suggerimenti.";
+  
   try {
-    // Coding hints benefit from the reasoning power of gemini-3-pro-preview
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
       contents: `
@@ -86,7 +100,6 @@ export async function getHint(
         Spiega la logica o la parola chiave SQL da usare.
       `,
     });
-    // Use response.text directly.
     return response.text || "Non riesco a darti un suggerimento al momento. Rileggi bene lo schema!";
   } catch (error) {
     return "Il professore è occupato. Prova a ragionare sulle tabelle!";
