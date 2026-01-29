@@ -107,7 +107,7 @@ const App: React.FC = () => {
       <div className="bg-[#0f172a] rounded-[2.5rem] p-8 md:p-12 border-4 border-blue-500/40 shadow-[0_0_100px_rgba(56,189,248,0.2)] max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar">
         <div className="flex justify-between items-center mb-8 border-b border-white/10 pb-6">
            <div>
-              <h3 className="font-game text-2xl text-blue-400 italic uppercase">Guida Accademica</h3>
+              <h3 className="font-game text-2xl text-blue-400 uppercase tracking-tight">Guida Accademica</h3>
               <p className="text-[10px] font-game text-slate-500 tracking-[0.4em] uppercase">Step {stepIndex + 1} di {steps.length}</p>
            </div>
            <div className="flex gap-1.5">
@@ -119,7 +119,7 @@ const App: React.FC = () => {
 
         <div className="min-h-[300px] flex flex-col justify-center">
            <div className="animate-in fade-in slide-in-from-bottom-8 duration-500 key={stepIndex}">
-              <span className="inline-block px-4 py-1 bg-orange-500/20 text-orange-400 rounded-lg font-game text-xs mb-6 tracking-widest uppercase font-black">{currentStep.label}</span>
+              <span className="inline-block px-4 py-1 bg-orange-500/20 text-orange-400 rounded-lg font-game text-[10px] mb-6 tracking-widest uppercase font-black">{currentStep.label}</span>
               
               <div className="space-y-6">
                 {currentStep.type === 'tables' && (
@@ -139,14 +139,14 @@ const App: React.FC = () => {
                      <pre className="whitespace-pre-wrap leading-relaxed">{typedCode}</pre>
                   </div>
                 ) : (
-                  <p className="text-2xl md:text-3xl text-blue-100 font-bold italic leading-snug drop-shadow-md">
+                  <p className="text-2xl md:text-3xl text-white font-bold leading-snug tracking-tight">
                     {currentStep.content}
                   </p>
                 )}
                 
                 {currentStep.type === 'logic' && (
-                  <div className="mt-8 p-6 bg-slate-800/40 rounded-2xl border border-white/5 italic text-slate-400 text-lg flex items-start gap-4">
-                    <span className="text-orange-400 text-2xl">💡</span>
+                  <div className="mt-8 p-6 bg-slate-800/40 rounded-2xl border border-white/5 text-slate-300 text-lg flex items-start gap-4">
+                    <span className="text-orange-400 text-2xl shrink-0">💡</span>
                     <span>{currentStep.content}</span>
                   </div>
                 )}

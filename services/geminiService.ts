@@ -16,10 +16,10 @@ export async function evaluateSqlCode(
   const apiKey = process.env.API_KEY;
 
   if (!apiKey || apiKey === "undefined" || apiKey === "") {
-    console.error("ERRORE: API_KEY non configurata.");
+    console.error("DIAGNOSTICA: API_KEY non rilevata.");
     return { 
       success: false, 
-      feedback: "ERRORE DI CONFIGURAZIONE: La chiave API non è presente. Se sei su Vercel, aggiungi API_KEY nelle Environment Variables e riesegui il Deploy." 
+      feedback: "ERRORE DI TRASMISSIONE: La chiave API non è configurata correttamente. Su Vercel, devi impostare 'API_KEY' nelle variabili d'ambiente (Project Settings > Environment Variables) e poi rieseguire il Deploy." 
     };
   }
 
@@ -67,15 +67,14 @@ export async function evaluateSqlCode(
     const text = response.text || "{}";
     return JSON.parse(text.trim());
   } catch (error: any) {
-    console.error("Gemini API Error Detail:", error);
+    console.error("Dettaglio Errore API:", error);
     
-    let userMsg = "Errore di connessione col server di valutazione. Verifica la tua connessione o la validità della API KEY.";
+    let userMsg = "Errore di connessione col server di valutazione. Verifica che la tua API KEY sia attiva e valida.";
     
-    // Gestione specifica degli errori comuni
-    if (error?.message?.toLowerCase().includes("api key")) {
-      userMsg = "CHIAVE API NON VALIDA: Controlla di aver inserito correttamente la chiave Gemini nelle impostazioni di Vercel.";
-    } else if (error?.message?.includes("403") || error?.message?.includes("permission")) {
-      userMsg = "ERRORE 403: Accesso negato. La tua API KEY potrebbe non avere i permessi necessari o essere scaduta.";
+    if (error?.message?.toLowerCase().includes("api key") || error?.message?.includes("401")) {
+      userMsg = "CHIAVE API NON VALIDA: Controlla la chiave Gemini nel pannello di controllo di Vercel.";
+    } else if (error?.message?.includes("quota") || error?.message?.includes("429")) {
+      userMsg = "LIMITE RAGGIUNTO: Troppe richieste al server. Attendi un minuto prima di riprovare.";
     }
     
     return { success: false, feedback: userMsg };

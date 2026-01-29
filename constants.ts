@@ -136,18 +136,28 @@ export const getLevelsForSector = (sector: number, db: DatabaseID): Level[] => {
   } else if (sector === 2) { // MONDO 2: JOIN
     const t1 = isAste ? "Oggetto" : "Persona";
     const t2 = isAste ? "Opera_d_arte" : "Medico";
-    const pk = isAste ? "codice_oggetto" : "CF";
-    const fk = isAste ? "Codice_oggetto" : "CF";
 
-    const prompts = [
-      `Collega ${t1} con ${t2} per vedere i nomi e i loro dettagli collegati.`,
-      `Estrai il Nome dell'oggetto e l'autore (dalla tabella ${t2}) solo per gli oggetti di tipo 'Pittura'.`,
-      `Trova le persone che sono anche medici, mostrando Cognome e Specializzazione.`,
-      `Mostra il Nome dell'oggetto e l'ID dell'Asta associata (tabella Asta).`,
-      `Unisci ${t1}, ${t2} e Asta per avere un report completo di oggetti rari e prezzi base.`,
-      `Trova i medici che effettuano interventi unendo Medico e Effettua.`,
-      `Sfida Finale Join: Collega 3 tabelle (Persona, Medico, Effettua) per vedere chi opera.`
+    const astePrompts = [
+      `Collega Oggetto con Opera_d_arte per vedere i nomi e i loro dettagli collegati.`,
+      `Estrai il Nome dell'oggetto e l'autore (dalla tabella Opera_d_arte) solo per gli oggetti di tipo 'Pittura'.`,
+      `Trova gli oggetti che sono opere d'arte, mostrando il Nome e l'Autore dell'opera.`,
+      `Mostra il Nome dell'oggetto e l'ID dell'Asta associata consultando la tabella Asta.`,
+      `Unisci Oggetto, Opera_d_arte e Asta per avere un report completo di oggetti d'arte e prezzi base.`,
+      `Trova gli oggetti in vendita mostrando Nome e Prezzo Finale collegando Oggetto con Vendita.`,
+      `Sfida Finale Join Aste: Collega Oggetto, Asta e Vendita per vedere chi ha acquistato cosa.`
     ];
+
+    const ospedalePrompts = [
+      `Collega Persona con Medico per vedere i nomi dei medici e la loro specializzazione.`,
+      `Estrai Cognome e Specializzazione (dalla tabella Medico) solo per chi ha più di 10 anni di esperienza.`,
+      `Trova le persone che sono anche medici, mostrando Cognome e Specializzazione.`,
+      `Mostra il Nome della persona e il tipo di intervento effettuato (tabella Intervento).`,
+      `Unisci Persona, Medico ed Effettua per avere l'elenco dei medici e degli interventi fatti.`,
+      `Trova gli infermieri che assistono agli interventi unendo Infermiere e Assiste.`,
+      `Sfida Finale Join Medico: Collega Persona, Medico ed Effettua per vedere chi opera.`
+    ];
+
+    const prompts = isAste ? astePrompts : ospedalePrompts;
 
     for (let i = 0; i < 7; i++) {
       levels.push({
@@ -162,10 +172,10 @@ export const getLevelsForSector = (sector: number, db: DatabaseID): Level[] => {
         x: points[i].x, y: points[i].y,
         steps: [
           { label: "OBIETTIVO", type: 'text', content: prompts[i] },
-          { label: "TABELLE", type: 'tables', content: `Coinvolgeremo ${t1} e ${t2}.`, highlightedTables: [t1, t2] },
-          { label: "RELAZIONE", type: 'logic', content: `Il collegamento avviene tra ${t1}.${pk} e ${t2}.${fk}.` },
+          { label: "TABELLE", type: 'tables', content: `Coinvolgeremo ${t1} e altre tabelle correlate.`, highlightedTables: [t1] },
+          { label: "RELAZIONE", type: 'logic', content: `Il collegamento avviene tramite le chiavi primarie ed esterne.` },
           { label: "PROCEDIMENTO", type: 'logic', content: "Usiamo la clausola ON per definire il 'ponte' tra le tabelle." },
-          { label: "SOLUZIONE", type: 'code', content: "La query di giunzione:", code: `SELECT ${t1}.Nome, ${t2}.${isAste ? 'autore' : 'Specializzazione'} \nFROM ${t1} JOIN ${t2} ON ${t1}.${pk} = ${t2}.${fk};` }
+          { label: "SOLUZIONE", type: 'code', content: "La query di giunzione segue questa logica:", code: `SELECT ... \nFROM ${t1} JOIN ... ON ...;` }
         ]
       });
     }
@@ -179,8 +189,8 @@ export const getLevelsForSector = (sector: number, db: DatabaseID): Level[] => {
       `Calcola la somma totale di tutti i ${isAste ? 'prezzi di rilancio' : 'anni di esperienza'}.`,
       `Trova il valore massimo di ${col} mai registrato.`,
       `Calcola la media di ${col} per ogni ${group}.`,
-      `Conta quanti rilanci ha ricevuto ogni singola Asta.`,
-      `Mostra solo le specializzazioni (${group}) che hanno una media di ${col} superiore a 10.`,
+      `Conta quanti rilanci ha ricevuto ogni singola Asta.` ,
+      `Mostra solo i raggruppamenti (${group}) che hanno una media superiore a 10.`,
       `Report Analitico: Numero di elementi e media valori raggruppati.`
     ];
 
@@ -200,7 +210,7 @@ export const getLevelsForSector = (sector: number, db: DatabaseID): Level[] => {
           { label: "TABELLE", type: 'tables', content: `Useremo la tabella ${table}.`, highlightedTables: [table] },
           { label: "AGGREGAZIONE", type: 'logic', content: `Dobbiamo raggruppare i dati per ${group} usando GROUP BY.` },
           { label: "FILTRO GRUPPI", type: 'logic', content: i === 5 ? "Useremo HAVING per filtrare i risultati DOPO il raggruppamento." : "Useremo una funzione di calcolo come AVG o SUM." },
-          { label: "SOLUZIONE", type: 'code', content: "Sintassi di analisi:", code: `SELECT ${group}, AVG(${col}) \nFROM ${table} \nGROUP BY ${group}${i === 5 ? ' HAVING AVG(...) > 10' : ''};` }
+          { label: "SOLUZIONE", type: 'code', content: "Sintassi di analisi:", code: `SELECT ${group}, AVG(${col}) \nFROM ${table} \nGROUP BY ${group};` }
         ]
       });
     }
@@ -210,11 +220,11 @@ export const getLevelsForSector = (sector: number, db: DatabaseID): Level[] => {
 
     const prompts = [
       `Crea un trigger che impedisca di inserire un ${field} negativo in ${table}.`,
-      `Crea un trigger che, dopo ogni inserimento, registri l'operazione.`,
-      `Trigger di Validazione: Impedisci prezzi di rilancio inferiori al rilancio minimo.`,
-      `Trigger di Correzione: Se la durata inserita è NULL, impostala automaticamente a 30.`,
+      `Crea un trigger che, dopo ogni inserimento, registri l'operazione in una tabella di log.`,
+      `Trigger di Validazione: Impedisci ${isAste ? 'rilanci' : 'interventi'} con valori incoerenti.`,
+      `Trigger di Correzione: Se il valore inserito è NULL, impostalo automaticamente a un default.`,
       `Trigger Multi-Evento: Gestisci logica diversa per INSERT e UPDATE su ${table}.`,
-      `Trigger di Sicurezza: Impedisci modifiche alla tabella ${table} fuori orario.`,
+      `Trigger di Sicurezza: Impedisci modifiche alla tabella ${table} in determinati contesti.`,
       `Esame Finale Trigger: Crea un sistema di controllo integrità complesso.`
     ];
 
@@ -231,10 +241,10 @@ export const getLevelsForSector = (sector: number, db: DatabaseID): Level[] => {
         x: points[i].x, y: points[i].y,
         steps: [
           { label: "OBIETTIVO", type: 'text', content: prompts[i] },
-          { label: "EVENTO", type: 'logic', content: `Il trigger deve scattare BEFORE INSERT sulla tabella ${table}.` },
-          { label: "DATO :NEW", type: 'logic', content: "Useremo la variabile :NEW per accedere ai dati che si stanno provando a inserire." },
-          { label: "BLOCCO", type: 'logic', content: "Se la condizione è vera, useremo RAISE_APPLICATION_ERROR per bloccare l'azione." },
-          { label: "SOLUZIONE", type: 'code', content: "Struttura PL/SQL:", code: `CREATE OR REPLACE TRIGGER trg_safety \nBEFORE INSERT ON ${table} FOR EACH ROW \nBEGIN \n  IF :NEW.${field} < 0 THEN \n    RAISE_APPLICATION_ERROR(-20001, 'Valore non valido'); \n  END IF; \nEND;` }
+          { label: "EVENTO", type: 'logic', content: `Il trigger deve scattare sulla tabella ${table}.` },
+          { label: "DATO :NEW", type: 'logic', content: "Useremo la variabile :NEW per accedere ai dati in ingresso." },
+          { label: "BLOCCO", type: 'logic', content: "Useremo RAISE_APPLICATION_ERROR per bloccare azioni non valide." },
+          { label: "SOLUZIONE", type: 'code', content: "Struttura PL/SQL:", code: `CREATE OR REPLACE TRIGGER trg_example \nBEFORE INSERT ON ${table} FOR EACH ROW \nBEGIN \n  ...\nEND;` }
         ]
       });
     }
